@@ -5,13 +5,14 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System;
+using UnityEngine.InputSystem;
 
 public class Movimientojugador : MonoBehaviour
 {
     private Rigidbody2D _compRigidbody2D;
     
     public LayerMask layerdecolision;
-    private float horizontal;
+    public float horizontal;
     public int speex = 10;
     public int ditanciadelsalto = 5;
     public bool saltos;
@@ -46,8 +47,8 @@ public class Movimientojugador : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(raycastOrigin, raycastDirection, raycast, layerdecolision);
         Debug.DrawRay(raycastOrigin, Vector2.down, raycastColor);
 
-        horizontal = Input.GetAxisRaw("Horizontal");
-        _compRigidbody2D.velocity = new Vector2(horizontal * speex,_compRigidbody2D.velocity.y);
+       // horizontal = Input.GetAxisRaw("Horizontal");
+        
         if (Physics2D.Raycast(transform.position,Vector2.down, 2f, layerdecolision))
         {
             suelo= true;
@@ -57,17 +58,56 @@ public class Movimientojugador : MonoBehaviour
         {
             suelo = false;
         }
+        _compRigidbody2D.velocity = new Vector2(horizontal * speex, _compRigidbody2D.velocity.y);
+        /* if (Input.GetKeyDown(KeyCode.Space) && (suelo||saltos))
+         {
+             if (!suelo)
+             {
+                 saltos = true;
+             }
 
-        
-        if (Input.GetKeyDown(KeyCode.W) && (suelo||saltos))
+         }*/
+
+    }
+    public void cambiarRojo(InputAction.CallbackContext context)
+    {
+        if (context.performed)
         {
-            if (!suelo)
-            {
-                saltos = true;
-            }
-            _compRigidbody2D.velocity = new Vector2(_compRigidbody2D.velocity.x, ditanciadelsalto);
+            gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+            idcolor = 1;
         }
-
+    }
+    public void cambiarAzul(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            gameObject.GetComponent<SpriteRenderer>().color = Color.blue;
+            idcolor = 2;
+        }
+    }
+    public void cambiarNegro(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            gameObject.GetComponent<SpriteRenderer>().color = Color.black;
+            idcolor = 3;
+        }
+    }
+    public void cambiarnaranja(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            gameObject.GetComponent<SpriteRenderer>().color = new Color32(255, 129, 0, 255);
+            idcolor = 4;
+        }
+    }
+    public void CambiarVerde(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            gameObject.GetComponent<SpriteRenderer>().color = Color.green;
+            idcolor = 5;
+        }
     }
     public void cambiardecolorbotonrojo()
     {
@@ -98,6 +138,29 @@ public class Movimientojugador : MonoBehaviour
     public void Destruirpersonaje()
     {
         GameObject.Destroy(this.gameObject, 0);
+    }
+    public void Movimiento(InputAction.CallbackContext context)
+    {
+        horizontal = context.ReadValue<float>();
+    }
+    public void salto(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+           
+            if ((suelo || saltos))
+            {
+                if (!suelo)
+                {
+                    saltos = true;
+                    
+                }
+                _compRigidbody2D.velocity = new Vector2(_compRigidbody2D.velocity.x, ditanciadelsalto);
+            }
+           
+        }
+       
+
     }
     public void OnTriggerEnter2D(Collider2D collision)
     {
